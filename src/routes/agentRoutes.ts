@@ -16,40 +16,43 @@ const router = Router();
  *     Agent:
  *       type: object
  *       required:
- *         - language
- *         - firstMessage
- *         - systemPrompt
- *         - context
- *         - prompt
+ *         - agentName
+ *         - description
  *       properties:
  *         _id:
  *           type: string
  *           description: The auto-generated id of the agent
+ *         agentName:
+ *           type: string
+ *           example: "ChatGPT Agent"
+ *         description:
+ *           type: string
+ *           example: "An AI-powered chat agent"
+ *         agentType:
+ *           type: string
+ *           example: "conversational"
+ *         additionalLanguages:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["en", "fr", "es"]
  *         language:
  *           type: string
+ *           example: "en"
  *         firstMessage:
  *           type: string
+ *           example: "Hello! How can I help you today?"
  *         systemPrompt:
  *           type: string
- *         context:
- *           type: string
- *         prompt:
- *           type: string
- *         response:
- *           type: string
+ *           example: "You are a helpful assistant."
  *         createdAt:
  *           type: string
  *           format: date-time
+ *           readOnly: true
  *         updatedAt:
  *           type: string
  *           format: date-time
- *       example:
- *         language: "en"
- *         firstMessage: "Hello! I’m your assistant."
- *         systemPrompt: "You are a helpful AI agent."
- *         context: "Test context"
- *         prompt: "Test prompt"
- *         response: "Test response"
+ *           readOnly: true
  */
 
 /**

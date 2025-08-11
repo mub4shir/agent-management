@@ -1,7 +1,9 @@
 // testAgents.ts
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/agents";
+//const BASE_URL = "http://localhost:8080/api/agents";
+
+const BASE_URL = "http://34.131.176.96:8080/api/agents";
 
 async function testAgentsAPI() {
   try {
