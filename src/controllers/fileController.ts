@@ -1,0 +1,79 @@
+import { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+
+// Base upload directory
+const UPLOADS_DIR = path.join(__dirname, "../../uploads");
+
+// Create folder for an agent
+export const createFolder = (req: Request, res: Response) => {
+  try {
+    const { agentId, folderName } = req.body;
+
+    if (!agentId || !folderName) {
+      return res
+        .status(400)
+        .json({ error: "agentId and folderName are required" });
+    }
+
+    const folderPath = path.join(UPLOADS_DIR, agentId, folderName);
+
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    res
+      .status(201)
+      .json({ message: "Folder created successfully", folderPath });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Upload file into an agent’s folder
+export const uploadFile = (req: Request, res: Response) => {
+  try {
+    const { agentId, folderName } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    const filePath = path.join(folderPath, req.file.originalname);
+    fs.renameSync(req.file.path, filePath);
+
+    res.status(201).json({
+      message: "File uploaded successfully",
+      file: {
+        name: req.file.originalname,
+        path: filePath,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// List files in an agent’s folder
+export const listFiles = (req: Request, res: Response) => {
+  try {
+    const { agentId, folderName } = req.params;
+    const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
+
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const files = fs.readdirSync(folderPath);
+    res.json({ files });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};

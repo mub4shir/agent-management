@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import agentRoutes from "./routes/agentRoutes";
+import filesRoutes from "./routes/fileRoutes";
+import industryRoutes from "./routes/industryRoutes";
+
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger";
 const app = express();
@@ -13,6 +16,10 @@ app.use(morgan("dev"));
 
 // Routes
 app.use("/api/agents", agentRoutes);
+
+app.use("/api/files", filesRoutes);
+
+app.use("/api/industries", industryRoutes);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
