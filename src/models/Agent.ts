@@ -8,6 +8,10 @@ export interface IAgent extends Document {
   language?: string;
   firstMessage?: string;
   systemPrompt?: string;
+  folders: {
+    name: string;
+    files: string[]; // MinIO file paths
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +25,12 @@ const AgentSchema = new Schema<IAgent>(
     language: { type: String },
     firstMessage: { type: String },
     systemPrompt: { type: String },
+    folders: [
+      {
+        name: { type: String, required: true },
+        files: [{ type: String }],
+      },
+    ],
   },
   { timestamps: true }
 );

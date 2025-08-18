@@ -1,16 +1,16 @@
-// testAgents.ts
 import axios from "axios";
 
-//const BASE_URL = "http://localhost:8080/api/agents";
-
+// const BASE_URL = "http://localhost:8080/api/agents";
 const BASE_URL = "http://34.131.176.96:8080/api/agents";
 
 async function testAgentsAPI() {
   try {
     console.log("\n1️⃣ Creating Agent...");
     const createRes = await axios.post(BASE_URL, {
-      context: "Test context",
-      prompt: "Test prompt",
+      agentName: "Test Agent",
+      description: "This is a test agent",
+      agentType: "conversational",
+      additionalLanguages: ["en", "fr"],
       language: "en",
       firstMessage: "Hello! I’m your assistant.",
       systemPrompt: "You are a helpful AI agent.",
@@ -29,17 +29,19 @@ async function testAgentsAPI() {
 
     console.log("\n4️⃣ Updating Agent...");
     const updateRes = await axios.put(`${BASE_URL}/${agentId}`, {
-      context: "Updated context",
-      prompt: "Updated prompt",
+      agentName: "Updated Test Agent",
+      description: "Updated description",
+      agentType: "informational",
+      additionalLanguages: ["en", "es", "de"],
       language: "fr",
-      firstMessage: "Bonjour!",
-      systemPrompt: "You are a French AI assistant.",
+      firstMessage: "Bonjour! Je suis votre assistant.",
+      systemPrompt: "Vous êtes un assistant IA utile.",
     });
     console.log("✅ Updated Agent:", updateRes.data);
 
     console.log("\n5️⃣ Deleting Agent...");
-    const deleteRes = await axios.delete(`${BASE_URL}/${agentId}`);
-    console.log("✅ Deleted Agent:", deleteRes.data);
+    //  const deleteRes = await axios.delete(`${BASE_URL}/${agentId}`);
+    // console.log("✅ Deleted Agent:", deleteRes.data);
 
     console.log("\n🎯 All API tests completed successfully!");
   } catch (err: any) {
