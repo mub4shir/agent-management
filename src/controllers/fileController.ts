@@ -46,6 +46,9 @@ export const uploadFile = (req: Request, res: Response) => {
 
     const filePath = path.join(folderPath, req.file.originalname);
     fs.renameSync(req.file.path, filePath);
+    const fileUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/uploads/${agentId}/${folderName}/${req.file.filename}`;
 
     res.status(201).json({
       message: "File uploaded successfully",
@@ -54,6 +57,7 @@ export const uploadFile = (req: Request, res: Response) => {
         path: filePath,
         size: req.file.size,
         mimetype: req.file.mimetype,
+        fileUrl,
       },
     });
   } catch (error: any) {
