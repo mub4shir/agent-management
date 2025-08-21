@@ -8,6 +8,7 @@ export interface IAgent extends Document {
   language?: string;
   firstMessage?: string;
   systemPrompt?: string;
+  agentLogo?: string; // URL or path to the agent's logo
   folders: {
     name: string;
     files: string[]; // MinIO file paths
@@ -25,6 +26,7 @@ const AgentSchema = new Schema<IAgent>(
     language: { type: String },
     firstMessage: { type: String },
     systemPrompt: { type: String },
+    agentLogo: { type: String }, // URL or path to the agent's logo
     folders: [
       {
         name: { type: String, required: true },

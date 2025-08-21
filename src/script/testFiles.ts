@@ -3,7 +3,7 @@ import FormData from "form-data";
 import fs from "fs";
 import path from "path";
 
-const BASE_URL = "http://34.131.176.96:8080/api/agents";
+const BASE_URL = "http://34.131.176.96:8080/api/files";
 
 async function testFileAPI() {
   try {
