@@ -80,16 +80,15 @@ export const uploadFile = (req: Request, res: Response) => {
     }
 
     // Move tmp file to final location using ORIGINAL name
-    const finalFileName = req.file.originalname;
+    const finalFileName = req.file.originalname; // original filename
     const finalFilePath = path.join(folderPath, finalFileName);
     fs.renameSync(req.file.path, finalFilePath);
 
-    // Build public URL
-    const urlParts = [agentId];
-    if (folderName) urlParts.push(String(folderName));
-    urlParts.push(finalFileName); // <-- use originalname
-    const relUrl = urlParts.map(encodeURIComponent).join("/");
-    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${relUrl}`;
+    const fileUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/uploads/${agentId}/${encodeURIComponent(
+      folderName || ""
+    )}/${encodeURIComponent(finalFileName)}`;
 
     res.status(201).json({
       message: "File uploaded successfully",
@@ -98,7 +97,7 @@ export const uploadFile = (req: Request, res: Response) => {
         path: finalFilePath,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        fileUrl, // now points to correct accessible URL
+        fileUrl, // now correct
       },
     });
   } catch (error: any) {
