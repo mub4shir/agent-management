@@ -48,7 +48,7 @@ export const uploadFile = (req: Request, res: Response) => {
     fs.renameSync(req.file.path, filePath);
     const fileUrl = `${req.protocol}://${req.get(
       "host"
-    )}/uploads/${agentId}/${folderName}/${req.file.filename}`;
+    )}/uploads/${agentId}/${folderName}/${req.file.originalname}`;
 
     res.status(201).json({
       message: "File uploaded successfully",
