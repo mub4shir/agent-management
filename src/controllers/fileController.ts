@@ -30,34 +30,76 @@ export const createFolder = (req: Request, res: Response) => {
   }
 };
 
+// // Upload file into an agent’s folder
+// export const uploadFile = (req: Request, res: Response) => {
+//   try {
+//     const { agentId, folderName } = req.body;
+
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+
+//     const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
+//     if (!fs.existsSync(folderPath)) {
+//       fs.mkdirSync(folderPath, { recursive: true });
+//     }
+
+//     const filePath = path.join(folderPath, req.file.originalname);
+//     fs.renameSync(req.file.path, filePath);
+//     const fileUrl = `${req.protocol}://${req.get(
+//       "host"
+//     )}/uploads/${agentId}/${folderName}/${req.file.filename}`;
+
+//     res.status(201).json({
+//       message: "File uploaded successfully",
+//       file: {
+//         name: req.file.originalname,
+//         path: filePath,
+//         size: req.file.size,
+//         mimetype: req.file.mimetype,
+//         fileUrl,
+//       },
+//     });
+//   } catch (error: any) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 // Upload file into an agent’s folder
 export const uploadFile = (req: Request, res: Response) => {
   try {
     const { agentId, folderName } = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
+    if (!agentId) return res.status(400).json({ error: "agentId is required" });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
+    // Create the folder path (folderName is optional)
     const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
 
-    const filePath = path.join(folderPath, req.file.originalname);
-    fs.renameSync(req.file.path, filePath);
-    const fileUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/uploads/${agentId}/${folderName}/${req.file.filename}`;
+    // Move tmp file to final location using ORIGINAL name
+    const finalFileName = req.file.originalname;
+    const finalFilePath = path.join(folderPath, finalFileName);
+    fs.renameSync(req.file.path, finalFilePath);
+
+    // Build a PUBLIC URL that matches your static route (/uploads → ../uploads)
+    // Encode each path segment (handles spaces, parentheses, etc.)
+    const urlParts = [agentId];
+    if (folderName) urlParts.push(String(folderName));
+    urlParts.push(finalFileName);
+    const relUrl = urlParts.map(encodeURIComponent).join("/");
+
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${relUrl}`;
 
     res.status(201).json({
       message: "File uploaded successfully",
       file: {
-        name: req.file.originalname,
-        path: filePath,
+        name: finalFileName,
+        path: finalFilePath,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        fileUrl,
+        url: fileUrl,
       },
     });
   } catch (error: any) {
