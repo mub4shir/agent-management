@@ -65,7 +65,6 @@ export const createFolder = (req: Request, res: Response) => {
 //   }
 // };
 // Upload file into an agent’s folder
-// Upload file into an agent’s folder
 
 export const uploadFile = (req: Request, res: Response) => {
   const UPLOADS_DIR = path.join(__dirname, "../../uploads");
@@ -76,18 +75,15 @@ export const uploadFile = (req: Request, res: Response) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Ensure agent/folder exists
     const folderPath = path.join(UPLOADS_DIR, agentId, folderName);
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
 
-    // Move file from tmp to final folder using original name
     const finalFileName = req.file.originalname;
     const finalFilePath = path.join(folderPath, finalFileName);
     fs.renameSync(req.file.path, finalFilePath);
 
-    // Build accessible URL
     const fileUrl = `${req.protocol}://${req.get(
       "host"
     )}/uploads/${agentId}/${encodeURIComponent(
