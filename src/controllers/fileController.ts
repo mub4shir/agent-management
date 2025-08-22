@@ -86,10 +86,7 @@ export const uploadFile = (req: Request, res: Response) => {
 
     const fileUrl = `${req.protocol}://${req.get(
       "host"
-    )}/uploads/${agentId}/${encodeURIComponent(
-      folderName
-    )}/${encodeURIComponent(finalFileName)}`;
-
+    )}/uploads/${agentId}/${folderName}/${req.file.originalname}`;
     res.status(201).json({
       message: "File uploaded successfully",
       file: {
