@@ -65,6 +65,7 @@ export const createFolder = (req: Request, res: Response) => {
 //   }
 // };
 // Upload file into an agent’s folder
+// Upload file into an agent’s folder
 export const uploadFile = (req: Request, res: Response) => {
   try {
     const { agentId, folderName } = req.body;
@@ -72,7 +73,7 @@ export const uploadFile = (req: Request, res: Response) => {
     if (!agentId) return res.status(400).json({ error: "agentId is required" });
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    // Create the folder path (folderName is optional)
+    // Create folder path
     const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
@@ -83,13 +84,11 @@ export const uploadFile = (req: Request, res: Response) => {
     const finalFilePath = path.join(folderPath, finalFileName);
     fs.renameSync(req.file.path, finalFilePath);
 
-    // Build a PUBLIC URL that matches your static route (/uploads → ../uploads)
-    // Encode each path segment (handles spaces, parentheses, etc.)
+    // Build public URL
     const urlParts = [agentId];
     if (folderName) urlParts.push(String(folderName));
-    urlParts.push(finalFileName);
+    urlParts.push(finalFileName); // <-- use originalname
     const relUrl = urlParts.map(encodeURIComponent).join("/");
-
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${relUrl}`;
 
     res.status(201).json({
@@ -99,7 +98,7 @@ export const uploadFile = (req: Request, res: Response) => {
         path: finalFilePath,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        url: fileUrl,
+        fileUrl, // now points to correct accessible URL
       },
     });
   } catch (error: any) {
