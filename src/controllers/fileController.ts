@@ -66,28 +66,32 @@ export const createFolder = (req: Request, res: Response) => {
 // };
 // Upload file into an agent’s folder
 // Upload file into an agent’s folder
+
 export const uploadFile = (req: Request, res: Response) => {
+  const UPLOADS_DIR = path.join(__dirname, "../../uploads");
   try {
-    const { agentId, folderName } = req.body;
+    const { agentId, folderName = "" } = req.body;
 
-    if (!agentId) return res.status(400).json({ error: "agentId is required" });
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
 
-    // Create folder path
-    const folderPath = path.join(UPLOADS_DIR, agentId, folderName || "");
+    // Ensure agent/folder exists
+    const folderPath = path.join(UPLOADS_DIR, agentId, folderName);
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
 
-    // Move tmp file to final location using ORIGINAL name
-    const finalFileName = req.file.originalname; // original filename
+    // Move file from tmp to final folder using original name
+    const finalFileName = req.file.originalname;
     const finalFilePath = path.join(folderPath, finalFileName);
     fs.renameSync(req.file.path, finalFilePath);
 
+    // Build accessible URL
     const fileUrl = `${req.protocol}://${req.get(
       "host"
     )}/uploads/${agentId}/${encodeURIComponent(
-      folderName || ""
+      folderName
     )}/${encodeURIComponent(finalFileName)}`;
 
     res.status(201).json({
@@ -97,7 +101,7 @@ export const uploadFile = (req: Request, res: Response) => {
         path: finalFilePath,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        fileUrl, // now correct
+        fileUrl,
       },
     });
   } catch (error: any) {
